@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.example.citymall.navigation.NavGraph
 import com.example.citymall.ui.theme.CityMallTheme
 import com.example.citymall.ui.theme.mainColor
@@ -34,7 +35,7 @@ fun MyApp() {
         // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = mainColor
+            color = Color.White,
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,

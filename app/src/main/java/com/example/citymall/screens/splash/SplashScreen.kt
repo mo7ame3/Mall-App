@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +24,8 @@ import com.example.citymall.R
 import com.example.citymall.constant.Constant
 import com.example.citymall.navigation.AllScreens
 import com.example.citymall.sharedpreference.SharedPreference
+import com.example.citymall.ui.theme.mainColor
+import com.example.citymall.ui.theme.redColor
 import kotlinx.coroutines.delay
 
 @Composable
@@ -55,17 +58,29 @@ fun SplashScreen(navController: NavController) {
         }
     })
 
-    Surface(modifier = Modifier.fillMaxSize())
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = mainColor
+    )
     {
         Box(contentAlignment = Alignment.Center) {
-            Image(
-                painter = painterResource(id = R.drawable.shopping_mall),
-                contentDescription = null,
+            Surface(
                 modifier = Modifier
-                    .size(300.dp, 300.dp)
-                    .scale(scale.value)
+                    .size(400.dp, 400.dp)
+                    .scale(scale.value),
+                color = redColor,
+                shape = CircleShape
             )
-
+            {
+                Box(contentAlignment = Alignment.Center) {
+                    Image(
+                        painter = painterResource(id = R.drawable.shopping_mall),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(300.dp, 300.dp)
+                    )
+                }
+            }
         }
     }
 
