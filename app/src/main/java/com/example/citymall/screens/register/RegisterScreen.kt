@@ -1,8 +1,6 @@
-package com.example.citymall.screens.login
+package com.example.citymall.screens.register
 
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,18 +21,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.citymall.components.CircleInductor
-import com.example.citymall.components.TextInput
 import com.example.citymall.components.LoginButton
 import com.example.citymall.components.PasswordInput
+import com.example.citymall.components.TextInput
 import com.example.citymall.constant.Constant
 import com.example.citymall.data.WrapperClass
 import com.example.citymall.model.login.Login
@@ -43,15 +41,29 @@ import com.example.citymall.sharedpreference.SharedPreference
 import com.example.citymall.ui.theme.redColor
 import kotlinx.coroutines.launch
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
+fun RegisterScreen(navController: NavController, registerViewModel: RegisterViewModel) {
     var loading by remember {
         mutableStateOf(false)
     }
     val email = remember {
         mutableStateOf("")
+    }
+    val emailError = remember {
+        mutableStateOf(false)
+    }
+    val name = remember {
+        mutableStateOf("")
+    }
+    val nameError = remember {
+        mutableStateOf(false)
+    }
+    val phone = remember {
+        mutableStateOf("")
+    }
+    val phoneError = remember {
+        mutableStateOf(false)
     }
     val password = remember {
         mutableStateOf("")
@@ -59,7 +71,10 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
     val eye = remember {
         mutableStateOf(false)
     }
-    val emailError = remember {
+    val passwordConfirm = remember {
+        mutableStateOf("")
+    }
+    val eyeConfirm = remember {
         mutableStateOf(false)
     }
     val context = LocalContext.current
@@ -73,12 +88,20 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Login Screen", style = TextStyle(
+                    text = "Register Screen", style = TextStyle(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 )
                 Spacer(modifier = Modifier.height(25.dp))
+                TextInput(input = name, label = "Name", onAction = KeyboardActions {
+                    keyboardController?.hide()
+                }, error = nameError, keyboardType = KeyboardType.Text)
+                Spacer(modifier = Modifier.height(15.dp))
+                TextInput(input = phone, label = "Phone", onAction = KeyboardActions {
+                    keyboardController?.hide()
+                }, error = phoneError, keyboardType = KeyboardType.Number)
+                Spacer(modifier = Modifier.height(15.dp))
                 TextInput(input = email, label = "Email", onAction = KeyboardActions {
                     keyboardController?.hide()
                 }, error = emailError)
@@ -88,13 +111,25 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                     eye = eye,
                     onButtonAction = { eye.value = !eye.value },
                     onAction = KeyboardActions {
-                        if (!emailError.value && password.value.isNotBlank()) {
+                        keyboardController?.hide()
+                    })
+                Spacer(modifier = Modifier.height(15.dp))
+                PasswordInput(
+                    password = passwordConfirm,
+                    eye = eyeConfirm,
+                    label = "Confirm Password",
+                    onButtonAction = { eyeConfirm.value = !eyeConfirm.value },
+                    onAction = KeyboardActions {
+                        if (!emailError.value && !nameError.value && !phoneError.value && password.value == passwordConfirm.value) {
                             loading = true
                             scope.launch {
                                 val response: WrapperClass<Login, Boolean, Exception> =
-                                    loginViewModel.login(
+                                    registerViewModel.register(
                                         email = email.value,
-                                        password = password.value
+                                        password = password.value,
+                                        name = name.value,
+                                        phone = phone.value,
+                                        passwordConfirm = passwordConfirm.value
                                     )
                                 if (response.data?.status == "success") {
                                     loading = false
@@ -125,16 +160,20 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                                 keyboardController?.hide()
                             }
                         }
+
                     })
                 Spacer(modifier = Modifier.height(15.dp))
-                LoginButton(label = "Login") {
-                    if (!emailError.value && password.value.isNotBlank()) {
+                LoginButton(label = "Register") {
+                    if (!emailError.value && !nameError.value && !phoneError.value && password.value == passwordConfirm.value) {
                         loading = true
                         scope.launch {
                             val response: WrapperClass<Login, Boolean, Exception> =
-                                loginViewModel.login(
+                                registerViewModel.register(
                                     email = email.value,
-                                    password = password.value
+                                    password = password.value,
+                                    name = name.value,
+                                    phone = phone.value,
+                                    passwordConfirm = passwordConfirm.value
                                 )
                             if (response.data?.status == "success") {
                                 loading = false
@@ -145,16 +184,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                                     navController.popBackStack()
                                     navController.popBackStack()
                                 }
-                            }
-                            else if (response.e != null) {
+                            } else if (response.e != null) {
                                 loading = false
                                 Toast.makeText(
                                     context,
                                     "خطأ في الانترنت",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                            }
-                            else if (response.data?.status == "fail" || response.data?.status == "error") {
+                            } else if (response.data?.status == "fail" || response.data?.status == "error") {
                                 loading = false
                                 Toast.makeText(
                                     context,
@@ -162,16 +199,9 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
-
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(15.dp))
-
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(text = "Forget Password ", color = Color.Black)
-                }
-
                 Spacer(modifier = Modifier.height(25.dp))
 
                 Row(
@@ -179,18 +209,22 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Don't have account yet ?")
+                    Text(text = "have account ?")
                     TextButton(onClick = {
-                        navController.navigate(AllScreens.RegisterScreen.name)
+                        navController.navigate(AllScreens.LoginScreen.name) {
+                            navController.popBackStack()
+                            navController.popBackStack()
+                            navController.popBackStack()
+                        }
                     }) {
-                        Text(text = "Register Now", color = redColor)
+                        Text(text = "Login", color = redColor)
                     }
                 }
 
             }
-        }
-        else {
+        } else {
             CircleInductor()
         }
     }
+
 }
