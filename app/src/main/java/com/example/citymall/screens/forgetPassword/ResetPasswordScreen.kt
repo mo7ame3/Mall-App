@@ -1,17 +1,14 @@
-package com.example.citymall.screens.register
+package com.example.citymall.screens.forgetPassword
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,44 +22,31 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.citymall.components.CircleInductor
 import com.example.citymall.components.LoginButton
+import com.example.citymall.components.OtpTextField
 import com.example.citymall.components.PasswordInput
-import com.example.citymall.components.TextInput
-import com.example.citymall.constant.Constant
 import com.example.citymall.data.WrapperClass
 import com.example.citymall.model.login.Login
 import com.example.citymall.navigation.AllScreens
-import com.example.citymall.sharedpreference.SharedPreference
-import com.example.citymall.ui.theme.redColor
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun RegisterScreen(navController: NavController, registerViewModel: RegisterViewModel) {
+fun ResetPasswordScreen(
+    navController: NavController,
+    forgetPasswordViewModel: ForgetPasswordViewModel
+) {
     var loading by remember {
         mutableStateOf(false)
     }
-    val email = remember {
+    var otpCode by remember {
         mutableStateOf("")
     }
-    val emailError = remember {
-        mutableStateOf(false)
-    }
-    val name = remember {
-        mutableStateOf("")
-    }
-    val nameError = remember {
-        mutableStateOf(false)
-    }
-    val phone = remember {
-        mutableStateOf("")
-    }
-    val phoneError = remember {
+    val otpError = remember {
         mutableStateOf(false)
     }
     val password = remember {
@@ -77,9 +61,8 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
     val eyeConfirm = remember {
         mutableStateOf(false)
     }
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val sharedPreference = SharedPreference(context)
+    val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     Surface(modifier = Modifier.fillMaxSize()) {
         if (!loading) {
@@ -88,23 +71,19 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Register Screen", style = TextStyle(
+                    text = "Forget Password", style = TextStyle(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 )
                 Spacer(modifier = Modifier.height(25.dp))
-                TextInput(input = name, label = "Name", onAction = KeyboardActions {
-                    keyboardController?.hide()
-                }, error = nameError, keyboardType = KeyboardType.Text)
-                Spacer(modifier = Modifier.height(15.dp))
-                TextInput(input = phone, label = "Phone", onAction = KeyboardActions {
-                    keyboardController?.hide()
-                }, error = phoneError, keyboardType = KeyboardType.Number)
-                Spacer(modifier = Modifier.height(15.dp))
-                TextInput(input = email, label = "Email", onAction = KeyboardActions {
-                    keyboardController?.hide()
-                }, error = emailError)
+                OtpTextField(
+                    otpText = otpCode,
+                    onOtpTextChange = { value, otpInputFilled ->
+                        otpCode = value
+                        otpError.value = otpInputFilled
+                    }
+                )
                 Spacer(modifier = Modifier.height(15.dp))
                 PasswordInput(
                     password = password,
@@ -120,36 +99,30 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                     label = "Confirm Password",
                     onButtonAction = { eyeConfirm.value = !eyeConfirm.value },
                     onAction = KeyboardActions {
-                        if (!emailError.value && !nameError.value && !phoneError.value && password.value == passwordConfirm.value) {
+                        if (!otpError.value && password.value == passwordConfirm.value) {
                             loading = true
                             scope.launch {
                                 val response: WrapperClass<Login, Boolean, Exception> =
-                                    registerViewModel.register(
-                                        email = email.value,
-                                        password = password.value,
-                                        name = name.value,
-                                        phone = phone.value,
-                                        passwordConfirm = passwordConfirm.value
+                                    forgetPasswordViewModel.resetPassword(
+                                        code = otpCode,
+                                        passwordConfirm = passwordConfirm.value,
+                                        password = password.value
                                     )
                                 if (response.data?.status == "success") {
                                     loading = false
-                                    sharedPreference.saveToken(token = response.data!!.token.toString())
-                                    Constant.token = response.data!!.token.toString()
-                                    navController.navigate(route = AllScreens.HomeScreen.name) {
+                                    navController.navigate(route = AllScreens.LoginScreen.name) {
                                         navController.popBackStack()
                                         navController.popBackStack()
                                         navController.popBackStack()
                                     }
-                                }
-                                else if (response.e != null) {
+                                } else if (response.e != null) {
                                     loading = false
                                     Toast.makeText(
                                         context,
                                         "خطأ في الانترنت",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                }
-                                else if (response.data?.status == "fail" || response.data?.status == "error") {
+                                } else if (response.data?.status == "fail" || response.data?.status == "error") {
                                     loading = false
                                     Toast.makeText(
                                         context,
@@ -162,23 +135,19 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                         }
                     })
                 Spacer(modifier = Modifier.height(15.dp))
-                LoginButton(label = "Register") {
-                    if (!emailError.value && !nameError.value && !phoneError.value && password.value == passwordConfirm.value) {
+                LoginButton(label = "Submit") {
+                    if (!otpError.value && password.value == passwordConfirm.value) {
                         loading = true
                         scope.launch {
                             val response: WrapperClass<Login, Boolean, Exception> =
-                                registerViewModel.register(
-                                    email = email.value,
-                                    password = password.value,
-                                    name = name.value,
-                                    phone = phone.value,
-                                    passwordConfirm = passwordConfirm.value
+                                forgetPasswordViewModel.resetPassword(
+                                    code = otpCode,
+                                    passwordConfirm = passwordConfirm.value,
+                                    password = password.value
                                 )
                             if (response.data?.status == "success") {
                                 loading = false
-                                sharedPreference.saveToken(token = response.data!!.token.toString())
-                                Constant.token = response.data!!.token.toString()
-                                navController.navigate(route = AllScreens.HomeScreen.name) {
+                                navController.navigate(route = AllScreens.LoginScreen.name) {
                                     navController.popBackStack()
                                     navController.popBackStack()
                                     navController.popBackStack()
@@ -198,25 +167,8 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
+                            keyboardController?.hide()
                         }
-                    }
-                }
-                Spacer(modifier = Modifier.height(25.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "have account ?")
-                    TextButton(onClick = {
-                        navController.navigate(AllScreens.LoginScreen.name) {
-                            navController.popBackStack()
-                            navController.popBackStack()
-                            navController.popBackStack()
-                        }
-                    }) {
-                        Text(text = "Login", color = redColor)
                     }
                 }
 
@@ -225,5 +177,4 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
             CircleInductor()
         }
     }
-
 }

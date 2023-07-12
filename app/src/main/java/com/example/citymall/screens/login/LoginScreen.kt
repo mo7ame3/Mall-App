@@ -53,13 +53,13 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
     val email = remember {
         mutableStateOf("")
     }
+    val emailError = remember {
+        mutableStateOf(false)
+    }
     val password = remember {
         mutableStateOf("")
     }
     val eye = remember {
-        mutableStateOf(false)
-    }
-    val emailError = remember {
         mutableStateOf(false)
     }
     val context = LocalContext.current
@@ -105,16 +105,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                                         navController.popBackStack()
                                         navController.popBackStack()
                                     }
-                                }
-                                else if (response.e != null) {
+                                } else if (response.e != null) {
                                     loading = false
                                     Toast.makeText(
                                         context,
                                         "خطأ في الانترنت",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                }
-                                else if (response.data?.status == "fail" || response.data?.status == "error") {
+                                } else if (response.data?.status == "fail" || response.data?.status == "error") {
                                     loading = false
                                     Toast.makeText(
                                         context,
@@ -145,16 +143,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                                     navController.popBackStack()
                                     navController.popBackStack()
                                 }
-                            }
-                            else if (response.e != null) {
+                            } else if (response.e != null) {
                                 loading = false
                                 Toast.makeText(
                                     context,
                                     "خطأ في الانترنت",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                            }
-                            else if (response.data?.status == "fail" || response.data?.status == "error") {
+                            } else if (response.data?.status == "fail" || response.data?.status == "error") {
                                 loading = false
                                 Toast.makeText(
                                     context,
@@ -168,7 +164,9 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                 }
                 Spacer(modifier = Modifier.height(15.dp))
 
-                TextButton(onClick = { /*TODO*/ }) {
+                TextButton(onClick = {
+                    navController.navigate(AllScreens.ForgetPasswordScreen.name)
+                }) {
                     Text(text = "Forget Password ", color = Color.Black)
                 }
 
@@ -188,8 +186,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                 }
 
             }
-        }
-        else {
+        } else {
             CircleInductor()
         }
     }

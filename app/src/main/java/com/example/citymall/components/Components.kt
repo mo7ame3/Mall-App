@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -70,9 +71,9 @@ fun TextInput(
     onAction: KeyboardActions = KeyboardActions.Default,
     isSingleLine: Boolean = true,
 ) {
-    val EMAIL_REGEX = "^[A-Za-z](.*)(@)(.+)(\\.)(.+)"
-    val PHONE_REGEX = "1[0-9](.+)"
-    val Name_REGEX = "^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$"
+    val emailRegex = "^[A-Za-z](.*)(@)(.+)(\\.)(.+)"
+    val phoneRegex = "1[0-9](.+)"
+    val nameRegex = "^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$"
 
     OutlinedTextField(
         modifier = modifier
@@ -84,15 +85,15 @@ fun TextInput(
         onValueChange = {
             if (label == "Email") {
                 input.value = it
-                error.value = !EMAIL_REGEX.toRegex().matches(it)
+                error.value = !emailRegex.toRegex().matches(it)
             } else if (label == "Phone") {
-                error.value = !PHONE_REGEX.toRegex().matches(it)
+                error.value = !phoneRegex.toRegex().matches(it)
                 if (it.length <= 10) {
                     input.value = it
                 }
             } else if (label == "Name") {
                 input.value = it
-                error.value = !Name_REGEX.toRegex().matches(it)
+                error.value = !nameRegex.toRegex().matches(it)
             }
         },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
@@ -243,6 +244,7 @@ private fun CharView(
     Text(
         modifier = Modifier
             .width(40.dp)
+            .height(40.dp)
             .border(
                 1.dp, when {
                     isFocused -> GreyDark

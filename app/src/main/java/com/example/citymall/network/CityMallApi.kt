@@ -11,9 +11,20 @@ interface CityMallApi {
     suspend fun login(
         @Body loginBody: Map<String, String>
     ): Login
+
     @POST(Constant.REGISTER)
     suspend fun register(
         @Body registerBody: Map<String, String>
     ): Login
+
+    @POST(Constant.FORGET_PASSWORD)
+    suspend fun forgetPassword(
+        @Body forgetPasswordBody: Map<String, String>
+    ): Login
+
+    @POST(Constant.RESET_PASSWORD)
+    suspend fun resetPassword(
+        @Body resetPasswordBody: Map<String, String>
+    ):Login
 
 }

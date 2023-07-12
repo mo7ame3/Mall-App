@@ -11,8 +11,7 @@ import javax.inject.Inject
 
 class MallRepository @Inject constructor(private val api: CityMallApi) {
 
-    private val login: WrapperClass<Login, Boolean, Exception> = WrapperClass()
-    private val register: WrapperClass<Login, Boolean, Exception> = WrapperClass()
+    private val authoentication: WrapperClass<Login, Boolean, Exception> = WrapperClass()
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     suspend fun login(
@@ -20,7 +19,7 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
         password: String
     ): WrapperClass<Login, Boolean, Exception> {
         try {
-            login.data = api.login(
+            authoentication.data = api.login(
                 loginBody = mapOf(
                     "email" to email,
                     "password" to password
@@ -30,12 +29,12 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
             val error = e.response()?.errorBody()?.string()
             val status = error!!.split("status")[1].split(":")[1].split("\"")[1]
             val message = error.split("message")[1].split("\":")[1]
-            login.data = Login(status = status, message = message)
+            authoentication.data = Login(status = status, message = message)
         } catch (e: Exception) {
             Log.d("TAG", "login: $e")
-            login.e = e
+            authoentication.e = e
         }
-        return login
+        return authoentication
     }
 
 
@@ -47,7 +46,7 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
         passwordConfirm: String
     ): WrapperClass<Login, Boolean, Exception> {
         try {
-            register.data = api.register(
+            authoentication.data = api.register(
                 registerBody = mapOf(
                     "name" to name,
                     "phone" to phone,
@@ -60,12 +59,58 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
             val error = e.response()?.errorBody()?.string()
             val status = error!!.split("status")[1].split(":")[1].split("\"")[1]
             val message = error.split("message")[1].split("\":")[1]
-            register.data = Login(status = status, message = message)
+            authoentication.data = Login(status = status, message = message)
         } catch (e: Exception) {
             Log.d("TAG", "register: $e")
-            register.e = e
+            authoentication.e = e
         }
-        return register
+        return authoentication
+    }
+
+    suspend fun forgetPassword(
+        email: String,
+    ): WrapperClass<Login, Boolean, Exception> {
+        try {
+            authoentication.data = api.forgetPassword(
+                forgetPasswordBody = mapOf(
+                    "email" to email,
+                )
+            )
+        } catch (e: HttpException) {
+            val error = e.response()?.errorBody()?.string()
+            val status = error!!.split("status")[1].split(":")[1].split("\"")[1]
+            val message = error.split("message")[1].split("\":")[1]
+            authoentication.data = Login(status = status, message = message)
+        } catch (e: Exception) {
+            Log.d("TAG", "forgetPassword: $e")
+            authoentication.e = e
+        }
+        return authoentication
+    }
+
+    suspend fun resetPassword(
+        password: String,
+        passwordConfirm: String,
+        code: String
+    ): WrapperClass<Login, Boolean, Exception> {
+        try {
+            authoentication.data = api.resetPassword(
+                resetPasswordBody = mapOf(
+                    "code" to code,
+                    "password" to password,
+                    "passwordConfirm" to passwordConfirm,
+                )
+            )
+        } catch (e: HttpException) {
+            val error = e.response()?.errorBody()?.string()
+            val status = error!!.split("status")[1].split(":")[1].split("\"")[1]
+            val message = error.split("message")[1].split("\":")[1]
+            authoentication.data = Login(status = status, message = message)
+        } catch (e: Exception) {
+            Log.d("TAG", "resetPassword: $e")
+            authoentication.e = e
+        }
+        return authoentication
     }
 
 }
