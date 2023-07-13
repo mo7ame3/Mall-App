@@ -30,7 +30,7 @@ import com.example.citymall.components.LoginButton
 import com.example.citymall.components.OtpTextField
 import com.example.citymall.components.PasswordInput
 import com.example.citymall.data.WrapperClass
-import com.example.citymall.model.login.Login
+import com.example.citymall.model.authentication.Authentication
 import com.example.citymall.navigation.AllScreens
 import kotlinx.coroutines.launch
 
@@ -46,7 +46,7 @@ fun ResetPasswordScreen(
     var otpCode by remember {
         mutableStateOf("")
     }
-    val otpError = remember {
+    val otpNotError = remember {
         mutableStateOf(false)
     }
     val password = remember {
@@ -81,7 +81,7 @@ fun ResetPasswordScreen(
                     otpText = otpCode,
                     onOtpTextChange = { value, otpInputFilled ->
                         otpCode = value
-                        otpError.value = otpInputFilled
+                        otpNotError.value = otpInputFilled
                     }
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -99,10 +99,10 @@ fun ResetPasswordScreen(
                     label = "Confirm Password",
                     onButtonAction = { eyeConfirm.value = !eyeConfirm.value },
                     onAction = KeyboardActions {
-                        if (!otpError.value && password.value == passwordConfirm.value) {
+                        if (otpNotError.value && password.value == passwordConfirm.value) {
                             loading = true
                             scope.launch {
-                                val response: WrapperClass<Login, Boolean, Exception> =
+                                val response: WrapperClass<Authentication, Boolean, Exception> =
                                     forgetPasswordViewModel.resetPassword(
                                         code = otpCode,
                                         passwordConfirm = passwordConfirm.value,
@@ -136,10 +136,10 @@ fun ResetPasswordScreen(
                     })
                 Spacer(modifier = Modifier.height(15.dp))
                 LoginButton(label = "Submit") {
-                    if (!otpError.value && password.value == passwordConfirm.value) {
+                    if (otpNotError.value && password.value == passwordConfirm.value) {
                         loading = true
                         scope.launch {
-                            val response: WrapperClass<Login, Boolean, Exception> =
+                            val response: WrapperClass<Authentication, Boolean, Exception> =
                                 forgetPasswordViewModel.resetPassword(
                                     code = otpCode,
                                     passwordConfirm = passwordConfirm.value,

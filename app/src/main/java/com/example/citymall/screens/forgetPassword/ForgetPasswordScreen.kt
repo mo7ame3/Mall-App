@@ -29,7 +29,7 @@ import com.example.citymall.components.CircleInductor
 import com.example.citymall.components.LoginButton
 import com.example.citymall.components.TextInput
 import com.example.citymall.data.WrapperClass
-import com.example.citymall.model.login.Login
+import com.example.citymall.model.authentication.Authentication
 import com.example.citymall.navigation.AllScreens
 import kotlinx.coroutines.launch
 
@@ -68,7 +68,7 @@ fun ForgetPasswordScreen(
                     if (!emailError.value) {
                         loading = true
                         scope.launch {
-                            val response: WrapperClass<Login, Boolean, Exception> =
+                            val response: WrapperClass<Authentication, Boolean, Exception> =
                                 forgetPasswordViewModel.forgetPassword(
                                     email = email.value,
                                 )
@@ -99,7 +99,7 @@ fun ForgetPasswordScreen(
                     if (!emailError.value) {
                         loading = true
                         scope.launch {
-                            val response: WrapperClass<Login, Boolean, Exception> =
+                            val response: WrapperClass<Authentication, Boolean, Exception> =
                                 forgetPasswordViewModel.forgetPassword(
                                     email = email.value,
                                 )

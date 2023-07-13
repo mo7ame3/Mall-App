@@ -35,7 +35,7 @@ import com.example.citymall.components.PasswordInput
 import com.example.citymall.components.TextInput
 import com.example.citymall.constant.Constant
 import com.example.citymall.data.WrapperClass
-import com.example.citymall.model.login.Login
+import com.example.citymall.model.authentication.Authentication
 import com.example.citymall.navigation.AllScreens
 import com.example.citymall.sharedpreference.SharedPreference
 import com.example.citymall.ui.theme.redColor
@@ -123,7 +123,7 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                         if (!emailError.value && !nameError.value && !phoneError.value && password.value == passwordConfirm.value) {
                             loading = true
                             scope.launch {
-                                val response: WrapperClass<Login, Boolean, Exception> =
+                                val response: WrapperClass<Authentication, Boolean, Exception> =
                                     registerViewModel.register(
                                         email = email.value,
                                         password = password.value,
@@ -166,7 +166,7 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                     if (!emailError.value && !nameError.value && !phoneError.value && password.value == passwordConfirm.value) {
                         loading = true
                         scope.launch {
-                            val response: WrapperClass<Login, Boolean, Exception> =
+                            val response: WrapperClass<Authentication, Boolean, Exception> =
                                 registerViewModel.register(
                                     email = email.value,
                                     password = password.value,

@@ -1,4 +1,4 @@
-package com.example.citymall.model.login
+package com.example.citymall.model.authentication
 
 data class Model(
     val id: String,

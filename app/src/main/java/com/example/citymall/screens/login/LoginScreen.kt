@@ -37,7 +37,7 @@ import com.example.citymall.components.LoginButton
 import com.example.citymall.components.PasswordInput
 import com.example.citymall.constant.Constant
 import com.example.citymall.data.WrapperClass
-import com.example.citymall.model.login.Login
+import com.example.citymall.model.authentication.Authentication
 import com.example.citymall.navigation.AllScreens
 import com.example.citymall.sharedpreference.SharedPreference
 import com.example.citymall.ui.theme.redColor
@@ -91,7 +91,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                         if (!emailError.value && password.value.isNotBlank()) {
                             loading = true
                             scope.launch {
-                                val response: WrapperClass<Login, Boolean, Exception> =
+                                val response: WrapperClass<Authentication, Boolean, Exception> =
                                     loginViewModel.login(
                                         email = email.value,
                                         password = password.value
@@ -129,7 +129,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                     if (!emailError.value && password.value.isNotBlank()) {
                         loading = true
                         scope.launch {
-                            val response: WrapperClass<Login, Boolean, Exception> =
+                            val response: WrapperClass<Authentication, Boolean, Exception> =
                                 loginViewModel.login(
                                     email = email.value,
                                     password = password.value

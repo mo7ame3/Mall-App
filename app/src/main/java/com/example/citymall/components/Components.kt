@@ -244,7 +244,7 @@ private fun CharView(
     Text(
         modifier = Modifier
             .width(40.dp)
-            .height(40.dp)
+            .height(30.dp)
             .border(
                 1.dp, when {
                     isFocused -> GreyDark
