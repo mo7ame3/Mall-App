@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class MallRepository @Inject constructor(private val api: CityMallApi) {
 
-    private val authoentication: WrapperClass<Authentication, Boolean, Exception> = WrapperClass()
+    private val authentication: WrapperClass<Authentication, Boolean, Exception> = WrapperClass()
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     suspend fun login(
@@ -19,7 +19,7 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
         password: String
     ): WrapperClass<Authentication, Boolean, Exception> {
         try {
-            authoentication.data = api.login(
+            authentication.data = api.login(
                 loginBody = mapOf(
                     "email" to email,
                     "password" to password
@@ -29,12 +29,12 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
             val error = e.response()?.errorBody()?.string()
             val status = error!!.split("status")[1].split(":")[1].split("\"")[1]
             val message = error.split("message")[1].split("\":")[1]
-            authoentication.data = Authentication(status = status, message = message)
+            authentication.data = Authentication(status = status, message = message)
         } catch (e: Exception) {
             Log.d("TAG", "login: $e")
-            authoentication.e = e
+            authentication.e = e
         }
-        return authoentication
+        return authentication
     }
 
 
@@ -46,7 +46,7 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
         passwordConfirm: String
     ): WrapperClass<Authentication, Boolean, Exception> {
         try {
-            authoentication.data = api.register(
+            authentication.data = api.register(
                 registerBody = mapOf(
                     "name" to name,
                     "phone" to phone,
@@ -59,19 +59,19 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
             val error = e.response()?.errorBody()?.string()
             val status = error!!.split("status")[1].split(":")[1].split("\"")[1]
             val message = error.split("message")[1].split("\":")[1]
-            authoentication.data = Authentication(status = status, message = message)
+            authentication.data = Authentication(status = status, message = message)
         } catch (e: Exception) {
             Log.d("TAG", "register: $e")
-            authoentication.e = e
+            authentication.e = e
         }
-        return authoentication
+        return authentication
     }
 
     suspend fun forgetPassword(
         email: String,
     ): WrapperClass<Authentication, Boolean, Exception> {
         try {
-            authoentication.data = api.forgetPassword(
+            authentication.data = api.forgetPassword(
                 forgetPasswordBody = mapOf(
                     "email" to email,
                 )
@@ -80,12 +80,12 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
             val error = e.response()?.errorBody()?.string()
             val status = error!!.split("status")[1].split(":")[1].split("\"")[1]
             val message = error.split("message")[1].split("\":")[1]
-            authoentication.data = Authentication(status = status, message = message)
+            authentication.data = Authentication(status = status, message = message)
         } catch (e: Exception) {
             Log.d("TAG", "forgetPassword: $e")
-            authoentication.e = e
+            authentication.e = e
         }
-        return authoentication
+        return authentication
     }
 
     suspend fun resetPassword(
@@ -94,7 +94,7 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
         code: String
     ): WrapperClass<Authentication, Boolean, Exception> {
         try {
-            authoentication.data = api.resetPassword(
+            authentication.data = api.resetPassword(
                 resetPasswordBody = mapOf(
                     "code" to code,
                     "password" to password,
@@ -105,12 +105,12 @@ class MallRepository @Inject constructor(private val api: CityMallApi) {
             val error = e.response()?.errorBody()?.string()
             val status = error!!.split("status")[1].split(":")[1].split("\"")[1]
             val message = error.split("message")[1].split("\":")[1]
-            authoentication.data = Authentication(status = status, message = message)
+            authentication.data = Authentication(status = status, message = message)
         } catch (e: Exception) {
             Log.d("TAG", "resetPassword: $e")
-            authoentication.e = e
+            authentication.e = e
         }
-        return authoentication
+        return authentication
     }
 
 }

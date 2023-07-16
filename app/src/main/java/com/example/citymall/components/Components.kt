@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,12 +28,17 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,7 +53,10 @@ import androidx.compose.ui.unit.dp
 import com.example.citymall.R
 import com.example.citymall.ui.theme.GreyDark
 import com.example.citymall.ui.theme.GreyLight
+import com.example.citymall.ui.theme.grayColor
+import com.example.citymall.ui.theme.mainColor
 import com.example.citymall.ui.theme.redColor
+import com.example.citymall.ui.theme.whiteColor
 
 @Composable
 fun CircleInductor() {
@@ -66,7 +75,7 @@ fun TextInput(
     modifier: Modifier = Modifier,
     input: MutableState<String>,
     keyboardType: KeyboardType = KeyboardType.Email,
-    error: MutableState<Boolean>,
+    error: MutableState<Boolean> = mutableStateOf(false),
     label: String,
     onAction: KeyboardActions = KeyboardActions.Default,
     isSingleLine: Boolean = true,
@@ -94,15 +103,24 @@ fun TextInput(
             } else if (label == "Name") {
                 input.value = it
                 error.value = !nameRegex.toRegex().matches(it)
+            } else {
+                input.value = it
             }
         },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         keyboardActions = onAction,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            errorBorderColor = Color.Red,
-            errorCursorColor = Color.Red,
-            errorLabelColor = Color.Red,
-        ),
+        colors = if (label == "Email" || label == "Phone" || label == "Name") {
+            TextFieldDefaults.outlinedTextFieldColors(
+                errorBorderColor = Color.Red,
+                errorCursorColor = Color.Red,
+                errorLabelColor = Color.Red,
+            )
+        } else {
+            TextFieldDefaults.outlinedTextFieldColors(
+                containerColor = whiteColor,
+                focusedLabelColor = whiteColor
+            )
+        },
         singleLine = isSingleLine,
         leadingIcon = {
             when (label) {
@@ -116,6 +134,10 @@ fun TextInput(
 
                 "Name" -> {
                     Icon(imageVector = Icons.Default.Person, contentDescription = null)
+                }
+
+                else -> {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = null)
                 }
             }
         },
@@ -261,4 +283,98 @@ private fun CharView(
         },
         textAlign = TextAlign.Center
     )
+}
+
+
+@Composable
+fun BottomBar(
+    selected: MutableState<String>,
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp),
+        shape = RoundedCornerShape(topEnd = 20.dp, topStart = 20.dp),
+        color = mainColor
+    ) {
+        NavigationBar(containerColor = mainColor, contentColor = mainColor) {
+            NavigationBarItem(selected = selected.value == "home", onClick = {
+                selected.value = "home"
+            }, icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.home),
+                    contentDescription = null,
+                    tint = whiteColor,
+                    modifier = Modifier.size(30.dp)
+                )
+            }, colors = NavigationBarItemDefaults.colors(
+                indicatorColor = grayColor
+            )
+            )
+
+            NavigationBarItem(selected = selected.value == "service", onClick = {
+                selected.value = "service"
+
+            }, icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.service),
+                    contentDescription = null,
+                    tint = whiteColor,
+                    modifier = Modifier.size(30.dp)
+                )
+            }, colors = NavigationBarItemDefaults.colors(
+                indicatorColor = grayColor
+            )
+            )
+
+            NavigationBarItem(
+                selected = selected.value == "missing", onClick = {
+                    selected.value = "missing"
+
+                },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.missing),
+                        contentDescription = null,
+                        tint = whiteColor,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }, colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = grayColor
+                )
+            )
+            NavigationBarItem(
+                selected = selected.value == "parking", onClick = {
+                    selected.value = "parking"
+
+                },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.parking),
+                        contentDescription = null,
+                        tint = whiteColor,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }, colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = grayColor
+                )
+            )
+            NavigationBarItem(
+                selected = selected.value == "checkout", onClick = {
+                    selected.value = "checkout"
+
+                },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.checkout),
+                        contentDescription = null,
+                        tint = whiteColor,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }, colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = grayColor
+                )
+            )
+        }
+    }
 }
